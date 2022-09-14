@@ -284,6 +284,12 @@ std::optional<LRESULT> WindowManagerPlugin::HandleWindowProc(HWND hWnd,
         window_manager->last_state = STATE_NORMAL;
       }
     }
+  } else if (message == WM_NCLBUTTONDBLCLK) {
+    LONG_PTR gwlStyle =
+        GetWindowLongPtr(window_manager->GetMainWindow(), GWL_STYLE);
+    if ((gwlStyle & WS_MAXIMIZEBOX) != 0) {
+      return 0;
+    }
   } else if (message == WM_CLOSE) {
     _EmitEvent("close");
     if (window_manager->IsPreventClose()) {
