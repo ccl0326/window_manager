@@ -31,6 +31,7 @@ English | [简体中文](./README-ZH.md)
         - [macOS](#macos)
       - [Confirm before closing](#confirm-before-closing)
       - [Hidden at launch](#hidden-at-launch)
+        - [Linux](#linux)
         - [macOS](#macos-1)
         - [Windows](#windows)
   - [Articles](#articles)
@@ -75,9 +76,9 @@ English | [简体中文](./README-ZH.md)
         - [setMovable  `macos`](#setmovable--macos)
         - [isMinimizable  `macos`  `windows`](#isminimizable--macos--windows)
         - [setMinimizable  `macos`  `windows`](#setminimizable--macos--windows)
-        - [isMaximizable  `windows`](#isMaximizable--windows)
-        - [setMaximizable  `windows`](#setMaximizable--windows)
-        - [isClosable  `macos`  `windows`](#isclosable--macos--windows)
+        - [isClosable  `windows`](#isclosable--windows)
+        - [isMaximizable  `windows`](#ismaximizable--windows)
+        - [setMaximizable](#setmaximizable--windows)
         - [setClosable  `macos`  `windows`](#setclosable--macos--windows)
         - [isAlwaysOnTop](#isalwaysontop)
         - [setAlwaysOnTop](#setalwaysontop)
@@ -133,7 +134,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  window_manager: ^0.2.6
+  window_manager: ^0.2.7
 ```
 
 Or
@@ -357,6 +358,39 @@ class _HomePageState extends State<HomePage> with WindowListener {
 ```
 
 #### Hidden at launch
+
+##### Linux
+
+Change the file `linux/my_application.cc` as follows:
+
+```diff
+
+...
+
+// Implements GApplication::activate.
+static void my_application_activate(GApplication* application) {
+  
+  ...
+
+  gtk_window_set_default_size(window, 1280, 720);
+-  gtk_widget_show(GTK_WIDGET(window));
++  gtk_widget_realize(GTK_WIDGET(window));
+
+  g_autoptr(FlDartProject) project = fl_dart_project_new();
+  fl_dart_project_set_dart_entrypoint_arguments(project, self->dart_entrypoint_arguments);
+
+  FlView* view = fl_view_new(project);
+  gtk_widget_show(GTK_WIDGET(view));
+  gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view));
+
+  fl_register_plugins(FL_PLUGIN_REGISTRY(view));
+
+  gtk_widget_grab_focus(GTK_WIDGET(view));
+}
+
+...
+
+```
 
 ##### macOS
 
@@ -631,7 +665,7 @@ Returns `bool` - Whether the window can be manually closed by user.
 Returns `bool` - Whether the window can be manually maximized by the user.
 
 
-##### setMaximizable
+##### setMaximizable `windows`
 
 Sets whether the window can be manually maximized by the user.
 
